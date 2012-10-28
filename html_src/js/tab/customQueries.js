@@ -122,7 +122,7 @@ this.CustomQueriesTab = Class.create(Tab,
 				return;
 			}
 
-			// Check if the textarea contains a valid json query ; TODO: better check by reusing Query constructor?
+			// Check if the textarea contains a valid json query ; TODO: better check by reusing Query constructor ?
 			var json = JSON.parse($textarea.value);
 			if(json && json.action)
 			{
