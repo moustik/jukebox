@@ -26,9 +26,7 @@ module ChannelMixin
 
   # log any action on current entry to channel_action.log file
   def log_action(action)
-    filename = "channel_action.log"
-    require 'yaml/store'
-    log_store = YAML::Store.new filename
+    log_store ||= YAML::Store.new "channel_action.log"
 
     action_object = [action,
                      ["artist" => @currentEntry.artist,
@@ -64,10 +62,10 @@ module SongQueueMixin
     begin
       puts mid
       song = @library.get_file(mid).first
-      
+
       filename = "channel_action.log"
-      log_store = YAML::Store.new filename
-      
+      log_store ||= YAML::Store.new filename
+
       action_object = [action,
                        ["artist" => song.artist,
                         "album" => song.album,
@@ -143,6 +141,17 @@ class Classifier
   def demote()
     # /2
     # join on artist, album, genre
+    song = db.request("mid, artist, album, genre",  mid.to_s, "mid", nil, nil, nil).first
+
+    indexes[:artists][song.artist].each do |score|
+      score[1] /= 2
+    end
+    indexes[:albums][song.album].each do |score|
+      score[1] /= 2
+    end
+    indexes[:genres][song.genre].each do |score|
+      score[1] /= 2
+    end
   end
 
   def dump()
