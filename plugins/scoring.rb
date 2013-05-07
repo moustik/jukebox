@@ -94,6 +94,7 @@ module ChannelMixin
     super
     log("uber plugin talking")
     log_action(__method__, @currentEntry)
+    update_classifier()
   end
 
 end
@@ -192,7 +193,7 @@ class Classifier
 
     # add missing songs
     if (scores.select do |score| score[0] == mid end).empty?
-      register(mid, artist, album, genre)
+      register_song(mid, artist, album, genre)
     end
 
     # I think over promotion can be good.
@@ -212,7 +213,7 @@ class Classifier
 
     # add missing songs
     if (scores.select do |score| score[0] == mid end).empty?
-      register(mid, artist, album, genre)
+      register_song(mid, artist, album, genre)
     end
 
     # uniq to demote only once
@@ -237,8 +238,10 @@ class Classifier
     # load up previous learning
     store = YAML::Store.new filename
     store.transaction do
-      @scores = store[:scores]
-      @indexes.merge(store[:indexes])
+      if store[:scores] and store[:indexes]
+        @scores = store[:scores]
+        @indexes.merge(store[:indexes])
+      end
     end
   end
 
