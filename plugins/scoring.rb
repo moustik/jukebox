@@ -26,7 +26,7 @@ end
 
 module ClassifierAble
   def update_classifier()
-    @@classifier ||= Classifier.new
+    @@classifier ||= Classifier.new(@name)
 
     actions ||= YAML::Store.new "channel_action.log"
     actions.transaction do
@@ -162,7 +162,7 @@ class Classifier
   # indexes  = { :artists = {name, [score_item0, ....]},
   #              :genre   = ...
 
-  def initialize()
+  def initialize(name)
     @scores = []
     @indexes = {
       :artists => Hash.new { |hash, key| hash[key] = [] },
@@ -170,6 +170,8 @@ class Classifier
       :genres => Hash.new { |hash, key| hash[key] = [] },
     }
     @entries = 0
+
+    @logfile = "learning_%s.log" % name
 
     load()
   end
@@ -231,7 +233,7 @@ class Classifier
     end
   end
 
-  def dump(filename="learning.log")
+  def dump(filename=@logfile)
     # dump this class
     store = YAML::Store.new filename
     store.transaction do
@@ -240,7 +242,7 @@ class Classifier
     end
   end
 
-  def load(filename="learning.log")
+  def load(filename=@logfile)
     # load up previous learning
     store = YAML::Store.new filename
     store.transaction do
