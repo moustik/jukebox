@@ -108,15 +108,21 @@ module SongQueueMixin
 
   def add(pos = nil, mid=0, opt={:log => true})
     super(pos, mid);
-    song = @library.get_file(mid).first
-    log_action(__method__, song) if(opt[:log]);
+    mids = expand_data(mid)
+    mids.each do |mid|
+      song = @library.get_file(mid).first
+      log_action(__method__, song) if(opt[:log]);
+    end
     pos;
   end
 
   def del(pos)
     mid = super(pos);
-    song = @library.get_file(mid).first
-    log_action(__method__, song)
+    mids = expand_data(mid)
+    mids.each do |mid|
+      song = @library.get_file(mid).first
+      log_action(__method__, song)
+    end
     mid;
   end
 
