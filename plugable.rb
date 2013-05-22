@@ -1,3 +1,10 @@
+# This Ruby dark magic allow class instances behavior to be overriden
+# at runtime.
+
+# As we want our plugins to be properly removed with no side effect
+# behaviours we keep tracks of installed plugin through the @ancestor
+# instance member
+
 module Plugable
   def extend mod
     @ancestors ||= {}
@@ -7,6 +14,8 @@ module Plugable
     super mod_clone
   end
 
+  # Get rid of a given plugin and invalidate its function thus
+  # 'reactivating' original ones
   def remove mod
     mod_clone = @ancestors[mod]
     mod_clone.instance_methods(false).each {|m|
