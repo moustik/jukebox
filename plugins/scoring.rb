@@ -1,11 +1,10 @@
 require 'yaml/store'
 
-#classifiable ?
 module YamlLogger
 
   # log any action on current entry to channel_action.log file
   def log_action(action, song)
-    @@log_store ||= YAML::Store.new "channel_action.log"
+    @@log_store ||= YAML::Store.new "#{@name}_actions.log"
     @@log_store.transaction do
       @@log_store['actions'] ||= []
     end
@@ -24,11 +23,12 @@ module YamlLogger
   end
 end
 
+#classifiable ?
 module ClassifierAble
   def update_classifier()
     @@classifier ||= Classifier.new(@name)
 
-    actions ||= YAML::Store.new "channel_action.log"
+    actions ||= YAML::Store.new "#{@name}_actions.log"
     actions.transaction do
       actions["actions"].each do |action|
         puts action[0]
@@ -72,6 +72,7 @@ module ChannelMixin
   include ClassifierAble
 
   def fetchData()
+    update_classifier()
     nb_preload = 11
     nb_preload = 1 if(@nb_songs <=  15) # first we check the number of songs in the database leading to left_side (playlist : <s> s s s *c* s s s)
 
@@ -102,8 +103,9 @@ end
 module SongQueueMixin
   include YamlLogger
 
-  def setlib(library)
+  def setenv(library, name)
     @library = library
+    @name = name
   end
 
   def add(pos = nil, mid=0, opt={:log => true})

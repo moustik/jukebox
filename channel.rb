@@ -135,8 +135,8 @@ class Channel
 
       # and set a little config
       #XXXdlet: til I figure something better
-      if SongQueueMixin.method_defined? :setlib
-        @queue.setlib(@library)
+      if SongQueueMixin.method_defined? :setenv
+        @queue.setenv(@library, @name)
       end
 
       # we're good
